@@ -1,0 +1,104 @@
+#https://fajarwz.com/blog/simple-full-stack-crud-with-nextjs-14-postgresql-and-prisma/
+
+➜  next nvm alias default lts/hydrogen
+default -> lts/hydrogen (-> v18.20.2)
+➜  next npx create-next-app@latest blog-nextjs-crud
+> npx
+> create-next-app blog-nextjs-crud
+
+✔ Would you like to use TypeScript? … No / Yes
+✔ Would you like to use ESLint? … No / Yes
+✔ Would you like to use Tailwind CSS? … No / Yes
+✔ Would you like to use `src/` directory? … No / Yes
+✔ Would you like to use App Router? (recommended) … No / Yes
+✔ Would you like to customize the default import alias (@/*)? … No / Yes
+Creating a new Next.js app in /Users/binu.b.varghese/source/next/blog-nextjs-crud.
+
+➜  next cd blog-nextjs-crud
+➜  blog-nextjs-crud git:(main) code .
+
+➜  npm install
+➜  npm install prisma --save-dev
+➜  npx prisma init
+
+Next steps:
+1. Set the DATABASE_URL in the .env file to point to your existing database. If your database has no tables yet, read https://pris.ly/d/getting-started
+2. Set the provider of the datasource block in schema.prisma to match your database: postgresql, mysql, sqlite, sqlserver, mongodb or cockroachdb.
+3. Run prisma db pull to turn your database schema into a Prisma schema.
+4. Run prisma generate to generate the Prisma Client. You can then start querying your database.
+
+More information in our documentation:
+https://pris.ly/d/getting-started
+
+┌────────────────────────────────────────────────────────────────┐
+│  Developing real-time features?                                │
+│  Prisma Pulse lets you respond instantly to database changes.  │
+│  https://pris.ly/cli/pulse                                     │
+└────────────────────────────────────────────────────────────────┘
+
+# Create database on PgAdmin blog_nextjs_crud
+# Update .env ( get userid password from docker-compose.yaml)
+# Add table definition in schema.prisma
+
+➜  blog-nextjs-crud git:(main) ✗ npx prisma db push
+
+> blog-nextjs-crud@0.1.0 npx
+> prisma db push
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "blog_nextjs_crud", schema "public" at "localhost:5432"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 404ms
+
+Running generate... (Use --skip-generate to skip the generators)
+
+added 1 package, and audited 370 packages in 7s
+
+137 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+✔ Generated Prisma Client (v5.16.1) to ./node_modules/@prisma/client in 144ms
+
+# The above step created the table with follwing SQL on PostgreSQL
+CREATE TABLE IF NOT EXISTS public."Post"
+(
+    id text COLLATE pg_catalog."default" NOT NULL,
+    title character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    content text COLLATE pg_catalog."default" NOT NULL,
+    "createdAt" timestamp(3) without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" timestamp(3) without time zone NOT NULL,
+    CONSTRAINT "Post_pkey" PRIMARY KEY (id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Post"
+    OWNER to postgres;
+
+#npm install zod
+
+➜  blog-nextjs-crud git:(main) ✗ npm run dev
+
+> blog-nextjs-crud@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.4
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 10.9s
+ ○ Compiling / ...
+ ✓ Compiled / in 11s (598 modules)
+ ✓ Compiled in 1445ms (260 modules)
+ GET / 200 in 12618ms
+ ○ Compiling /posts/create ...
+ ✓ Compiled /posts/create in 595ms (606 modules)
+ GET /posts/create 200 in 887ms
+ POST /posts/create 303 in 138ms
+ POST /posts/create 303 in 75ms
+ POST /posts/create 303 in 43ms
+ POST / 303 in 102ms
