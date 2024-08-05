@@ -102,3 +102,83 @@ ALTER TABLE IF EXISTS public."Post"
  POST /posts/create 303 in 75ms
  POST /posts/create 303 in 43ms
  POST / 303 in 102ms
+
+
+
+PostgreSQL
+================================================================
+➜  cd ~/source/postgres
+➜  postgres colima start
+INFO[0001] starting colima
+INFO[0001] runtime: docker
+INFO[0002] starting ...                                  context=vm
+INFO[0031] provisioning ...                              context=docker
+INFO[0033] starting ...                                  context=docker
+INFO[0037] done
+
+➜  postgres cat docker-compose.yaml
+version: '3.10'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:16.3
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      pass here
+ß      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:8.9
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      pass here
+    volumes:
+       - pgadmin:/root/.pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
+➜
+
+➜  postgres docker-compose up
+[+] Running 2/2
+ ⠿ Container postgres_container  Created                                   0.0s
+ ⠿ Container pgadmin_container   Recreate...                               1.3s
+Attaching to pgadmin_container, postgres_container
+postgres_container  |
+postgres_container  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+postgres_container  |
+pgadmin_container   | postfix/postlog: starting the Postfix mail system
+postgres_container  | 2024-08-05 20:16:33.776 UTC [1] LOG:  starting PostgreSQL 16.3 (Debian 16.3-1.pgdg120+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14) 12.2.0, 64-bit
+postgres_container  | 2024-08-05 20:16:33.777 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres_container  | 2024-08-05 20:16:33.777 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres_container  | 2024-08-05 20:16:33.780 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres_container  | 2024-08-05 20:16:33.787 UTC [29] LOG:  database system was shut down at 2024-07-10 02:07:51 UTC
+postgres_container  | 2024-08-05 20:16:33.804 UTC [1] LOG:  database system is ready to accept connections
+pgadmin_container   | [2024-08-05 20:16:38 +0000] [1] [INFO] Starting gunicorn 22.0.0
+pgadmin_container   | [2024-08-05 20:16:38 +0000] [1] [INFO] Listening at: http://[::]:80 (1)
+pgadmin_container   | [2024-08-05 20:16:38 +0000] [1] [INFO] Using worker: gthread
+pgadmin_container   | [2024-08-05 20:16:38 +0000] [89] [INFO] Booting worker with pid: 89
+
+➜  ~ docker ps
+CONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS                   PORTS                                                                                                                                     NAMES
+15d5b084841e   dpage/pgadmin4:8.9   "/entrypoint.sh"         59 seconds ago   Up 59 seconds            443/tcp, 0.0.0.0:5050->80/tcp, :::5050->80/tcp                                                                                            pgadmin_container
+b08896bce78c   postgres:16.3        "docker-entrypoint.s…"   4 weeks ago      Up 59 seconds            0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                                                 postgres_container
